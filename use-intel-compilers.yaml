@@ -1,0 +1,9 @@
+packages:
+  intel-mpi:
+    modules:
+      intel-mpi@2019.5.281:  intel/19
+    buildable: False
+  all:
+    compiler: [ intel ]
+    providers:
+      mpi:    [intel-mpi]
