@@ -6,12 +6,11 @@ COPY *.lic /opt/intel/licenses
 RUN  rpm -i /intel/rpm/*.rpm && rm -rf /intel
 
 # Detect intel compilers with spack
-# RUN  . /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/compilervars.sh intel64 \
-# &&   spack compiler find
-COPY compilers.yaml $SPACK_ROOT/etc/spack/compilers.yaml
+RUN  . /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/compilervars.sh intel64 \
+&&   spack compiler find
 
 # Create intel/19 modulefile
-COPY use-intel-compilers.yaml $SPACK_ROOT/etc/spack/packages.yaml
+COPY packages.yaml $SPACK_ROOT/etc/spack/packages.yaml
 COPY env2 /env2
 RUN  mkdir /usr/share/modulefiles/intel \
 &&   echo "#%Module" > /usr/share/modulefiles/intel/19 \
@@ -20,7 +19,8 @@ RUN  mkdir /usr/share/modulefiles/intel \
 &&   rm /env2
 
 # Install ESMF
-RUN module load intel/19 && spack install --no-checksum esmf@8.0.0 target=x86_64 -lapack -pio -pnetcdf -xerces
+RUN module load intel/19 \
+&&  spack install -v --no-checksum esmf@8.0.0 target=x86_64 -lapack -pio -pnetcdf -xerces
 
 # Install zsh
 RUN yum install -y zsh wget vim cmake3 \
@@ -33,7 +33,6 @@ RUN git clone https://github.com/Goddard-Fortran-Ecosystem/gFTL.git /gFTL \
 &&  cd /gFTL \
 &&  mkdir build \
 &&  cd build \
-&&  module load intel/19 \
 &&  cmake .. -DCMAKE_INSTALL_PREFIX=/opt/gFTL \
 &&  make -j install \
 &&  rm -rf /gFTL
